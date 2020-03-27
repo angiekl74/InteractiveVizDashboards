@@ -3,48 +3,93 @@ d3.selectAll("#selDataset").on("change", getData);
 function getData() {
     d3.json("samples.json").then((importedData) => {
         var data = importedData;
-        console.log(data);
-        // var dropdownMenu = d3.select("#selDataset");
-        // console.log(dropdownMenu)
+        var metaData = data.metadata
+
         var dataset = d3.select("#selDataset").node().value;
         var testCase = parseInt(dataset);
-        var results=[]
+        console.log(testCase);
+        // var results=[]
         var testId = data.metadata.map(row => row["id"])
         
-        var ethnicity = data.metadata.map(row => row["ethnicity"])
-        var gender = data.metadata.map(row => row["gender"])
-        var age = data.metadata.map(row => row["age"])
-        var location = data.metadata.map(row => row["location"])
-        var bbtype = data.metadata.map(row => row["bbtype"])
-        var wfreq =data.metadata.map(row => row["wfreq"])
+        // var ethnicity = data.metadata.map(row => row["ethnicity"])
 
         var resultindex = testId.indexOf(testCase, 0)
-        // console.log("result",resultindex)
+        console.log("result",resultindex)
 
-        results.push(testId[resultindex])
-        results.push(ethnicity[resultindex]) 
-        results.push(gender[resultindex])
-        results.push(age[resultindex])
-        results.push(location[resultindex])
-        results.push(bbtype[resultindex])
-        results.push(wfreq[resultindex])
-        console.log(results)  
+        // results.push(testId[resultindex])
+        // console.log(results)  
 
-        var panel = d3.select("sample-metadata");
-        // panel.html("")
-        // Object.entries(results).forEach(([key, value]) => {
-        //     panel.append("p").text(`${key} : ${value}`) 
-        // })
+    
+// NEW WAY OF GETTING DATA!  BUT can't append to panel to show output
+        finalResult = []
+        var panel = d3.select("#sample-metadata");
+        panel.html("")
+        
+        for (var i=0; i < metaData.length; i++) {
+            if (i === resultindex) {
+                Object.entries(data.metadata[i]).forEach(([key, value]) => 
+                finalResult.push(`${key}, ${value}`));
+                // console.log("F", finalResult)
+                var row = panel.append("p");
+                row.text(finalResult)
 
-     
-
-        for (var i = 0; i < results.length; i++) {
-            var table = document.getElementById("sample-metadata");
-            table.html("")
-            table.append(results[i])
-            console.log(results[i])
-          }
-})
+        buildPlot();
+            }
+        }   
+    })
 }
- 
+
+getData();
+
+// Make the horizontal bar chart
+function buildPlot(){
+    d3.json("samples.json").then((importedData) => {
+        var data = importedData;
+
+        var dataset = d3.select("#selDataset").node().value;
+        var testCase = parseInt(dataset);
+        console.log(testCase);
+        var testId = data.metadata.map(row => row["id"])
+        var resultindex = testId.indexOf(testCase, 0)
+        console.log("result in buildPlot",resultindex)
+
+        var results=[]
+        results.push(testId[resultindex])
+        console.log("Angie",results) 
+
+                var dataSamples = data.samples[resultindex].sample_values
+                console.log(dataSamples);
+                var dataIds = data.samples[resultindex].otu_ids
+                console.log(dataIds);
+            
+                dataTop10Samples = dataSamples.slice(0,10)
+                reversedataTop10Samples = dataTop10Samples.reverse()
+                dataTop10IdValues = dataIds.slice(0,10)
+                reversedataTop10Values = dataTop10IdValues.reverse().toString()
+                console.log(reversedataTop10Samples, dataTop10IdValues)
+
+                var trace = {
+                    x: reversedataTop10Samples,
+                    y: reversedataTop10Values,
+                    type: "bar",
+                orientation: "h"
+                };
+
+                var data = [trace];
+
+                var layout = {
+                    title: "TestId 940",
+                    yaxis: {
+                        title: "OTU-IDS",
+                        tickmode: 'array',
+                        tickvals: [0, 1, 2,3,4,5,6,7,8,9],
+                        ticktext: [1977, 2318, 189, 352, 1189, 41, 2264, 482, 2859, 1167]}
+                        //still need to fix this so it dynamically changes
+                };   
+
+                Plotly.newPlot("bar", data, layout);
+            
+        
+    })
+}
 
