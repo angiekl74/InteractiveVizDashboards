@@ -8,7 +8,7 @@ function getData() {
         var dataset = d3.select("#selDataset").node().value;
         var testCase = parseInt(dataset);
         console.log(testCase);
-        // var results=[]
+        var results=[]
         var testId = data.metadata.map(row => row["id"])
         
         // var ethnicity = data.metadata.map(row => row["ethnicity"])
@@ -16,8 +16,8 @@ function getData() {
         var resultindex = testId.indexOf(testCase, 0)
         console.log("result",resultindex)
 
-        // results.push(testId[resultindex])
-        // console.log(results)  
+        results.push(testId[resultindex])
+        console.log(results)  
 
     
 // NEW WAY OF GETTING DATA!  BUT can't append to panel to show output
@@ -57,39 +57,89 @@ function buildPlot(){
         results.push(testId[resultindex])
         console.log("Angie",results) 
 
-                var dataSamples = data.samples[resultindex].sample_values
-                console.log(dataSamples);
-                var dataIds = data.samples[resultindex].otu_ids
-                console.log(dataIds);
+            var dataSamples = data.samples[resultindex].sample_values
+            console.log(dataSamples);
+            var dataIds = data.samples[resultindex].otu_ids
+            console.log(dataIds);
             
-                dataTop10Samples = dataSamples.slice(0,10)
-                reversedataTop10Samples = dataTop10Samples.reverse()
-                dataTop10IdValues = dataIds.slice(0,10)
-                reversedataTop10Values = dataTop10IdValues.reverse().toString()
-                console.log(reversedataTop10Samples, dataTop10IdValues)
+            dataTop10Samples = dataSamples.slice(0,10)
+            reversedataTop10Samples = dataTop10Samples.reverse()
+            dataTop10IdValues = dataIds.slice(0,10)
+            reversedataTop10Values = dataTop10IdValues.reverse().toString()
+            console.log(reversedataTop10Samples, dataTop10IdValues)
 
-                var trace = {
-                    x: reversedataTop10Samples,
-                    y: reversedataTop10Values,
-                    type: "bar",
-                orientation: "h"
-                };
+            var trace = {
+                x: reversedataTop10Samples,
+                y: reversedataTop10Values,
+                type: "bar",
+            orientation: "h"
+            };
 
-                var data = [trace];
+            var data = [trace];
 
-                var layout = {
-                    title: "TestId 940",
-                    yaxis: {
-                        title: "OTU-IDS",
-                        tickmode: 'array',
-                        tickvals: [0, 1, 2,3,4,5,6,7,8,9],
-                        ticktext: [1977, 2318, 189, 352, 1189, 41, 2264, 482, 2859, 1167]}
-                        //still need to fix this so it dynamically changes
-                };   
+            var layout = {
+                title: `Test Id: ${testCase}`,
+                yaxis: {
+                    title: "OTU-IDS",
+                    tickmode: 'array',
+                    tickvals: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ],
+                    // ticktext: [dataSamples.forEach((i) => {console.log(i)})]
+                   }
+                    //still need to fix this so tick text dynamically changes
+            };   
 
-                Plotly.newPlot("bar", data, layout);
+            Plotly.newPlot("bar", data, layout);    
             
+            buildBubble();
         
+    })
+}
+
+
+function buildBubble(){
+    d3.json("samples.json").then((importedData) => {
+        var data = importedData;
+
+        var dataset = d3.select("#selDataset").node().value;
+        var testCase = parseInt(dataset);
+        console.log(testCase);
+        var testId = data.metadata.map(row => row["id"])
+        var resultindex = testId.indexOf(testCase, 0)
+        console.log("result in buildPlot",resultindex)
+
+        var results=[]
+        results.push(testId[resultindex])
+        console.log("Angie",results) 
+
+            var dataSamples = data.samples[resultindex].sample_values
+            console.log(dataSamples);
+            var dataIds = data.samples[resultindex].otu_ids
+            console.log(dataIds);
+            
+            dataTop10Samples = dataSamples.slice(0,10)
+            reversedataTop10Samples = dataTop10Samples.reverse()
+            dataTop10IdValues = dataIds.slice(0,10)
+            reversedataTop10Values = dataTop10IdValues.reverse().toString()
+            console.log(reversedataTop10Samples, dataTop10IdValues)
+
+            var trace = {
+                x: reversedataTop10Samples,
+                y: reversedataTop10Values,
+                mode: "markers",
+                marker: {
+                    size: [30,30,30,30,30,30,30,30,30,30]} // Need to use samples for marker size.
+            };
+
+            var data = [trace];
+
+            var layout = {
+                title: `Bubble for Test Id: ${testCase}`,
+                height: 600,
+                width: 1000                                         
+            };   
+
+            Plotly.newPlot("bubble", data, layout);               
+       
     })
 }
 
