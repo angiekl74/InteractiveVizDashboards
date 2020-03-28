@@ -28,12 +28,14 @@ function getData() {
         for (var i=0; i < metaData.length; i++) {
             if (i === resultindex) {
                 Object.entries(data.metadata[i]).forEach(([key, value]) => 
-                finalResult.push(`${key}, ${value}`));
-                // console.log("F", finalResult)
-                var row = panel.append("p");
-                row.text(finalResult)
-
+                finalResult.push(`${key}: ${value}`));
+                console.log("F", finalResult)
+                for (var j = 0; j < finalResult.length; j++) {
+                    var row = panel.append("p");
+                    row.text(finalResult[j]);                
+                
         buildPlot();
+                }
             }
         }   
     })
