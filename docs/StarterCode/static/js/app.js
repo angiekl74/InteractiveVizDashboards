@@ -19,8 +19,6 @@ function getData() {
         results.push(testId[resultindex])
         console.log(results)  
 
-    
-// NEW WAY OF GETTING DATA!  BUT can't append to panel to show output
         finalResult = []
         var panel = d3.select("#sample-metadata");
         panel.html("")
@@ -62,6 +60,7 @@ function buildPlot(){
             var dataSamples = data.samples[resultindex].sample_values
             console.log(dataSamples);
             var dataIds = data.samples[resultindex].otu_ids
+            var dataLabels = data.samples[resultindex].otu_labels
             console.log(dataIds);
             
             dataTop10Samples = dataSamples.slice(0,10)
@@ -74,7 +73,12 @@ function buildPlot(){
                 x: reversedataTop10Samples,
                 y: reversedataTop10Values,
                 type: "bar",
-            orientation: "h"
+                text: dataLabels,
+                orientation: "h",
+                marker: {
+                    color: [1,2,3,4,5,6,7,8,9,10],
+                    colorscale: [[0, 'rgb(200, 255, 200)'], [1, 'rgba(214, 0, 0, 1))']]
+                }
             };
 
             var data = [trace];
@@ -114,23 +118,28 @@ function buildBubble(){
         console.log("Angie",results) 
 
             var dataSamples = data.samples[resultindex].sample_values
-            console.log(dataSamples);
+            console.log("data samples", dataSamples);
             var dataIds = data.samples[resultindex].otu_ids
-            console.log(dataIds);
+            console.log("data ids", dataIds);
+            var dataLabels = data.samples[resultindex].otu_labels
+            console.log("data labels", dataLabels)
             
-            dataTop10Samples = dataSamples.slice(0,10)
-            reversedataTop10Samples = dataTop10Samples.reverse()
-            dataTop10IdValues = dataIds.slice(0,10)
-            reversedataTop10Values = dataTop10IdValues.reverse().toString()
-            console.log(reversedataTop10Samples, dataTop10IdValues)
+            // dataTop10Samples = dataSamples
+            // dataTop10IdValues = dataIds
+            // console.log(dataTop10Samples, dataTop10IdValues)
 
             var trace = {
-                x: reversedataTop10Samples,
-                y: reversedataTop10Values,
+                x: dataIds,
+                y: dataSamples,
+                type: "bubble",
                 mode: "markers",
+                text: dataLabels,
                 marker: {
-                    size: [30,30,30,30,30,30,30,30,30,30]} // Need to use samples for marker size.
-            };
+                    color: dataIds,
+                    size: dataSamples,
+                    colorscale: [[0, 'rgb(200, 255, 200)'], [1, 'rgb(0, 100, 0)']]                    
+                    }
+            };          
 
             var data = [trace];
 
