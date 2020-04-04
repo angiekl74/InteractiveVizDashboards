@@ -29,7 +29,7 @@ function getData() {
                     var row = panel.append("p");
                     row.text(finalResult[j]);                
                 
-        buildPlot();
+        buildPlot(importedData);
                 }
             }
         }   
@@ -39,9 +39,9 @@ function getData() {
 getData();
 
 // Build horizontal bar chart
-function buildPlot(){
-    d3.json("samples.json").then((importedData) => {
-        var data = importedData;
+function buildPlot(data){
+    // d3.json("samples.json").then((importedData) => {
+        // var data = importedData;
 
         var dataset = d3.select("#selDataset").node().value;
         var testCase = parseInt(dataset);
@@ -88,14 +88,14 @@ function buildPlot(){
 
             Plotly.newPlot("bar", data, layout);    
             
-            buildBubble();        
-    })
+            buildBubble(data);        
+    // })
 }
 
 // Build bubble chart
-function buildBubble(){
-    d3.json("samples.json").then((importedData) => {
-        var data = importedData;
+function buildBubble(data){
+    // d3.json("samples.json").then((importedData) => {
+    //     var data = importedData;
 
         var dataset = d3.select("#selDataset").node().value;
         var testCase = parseInt(dataset);
@@ -140,6 +140,6 @@ function buildBubble(){
 
             Plotly.newPlot("bubble", data, layout);               
        
-    })
+    // })
 }
 
