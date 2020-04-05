@@ -29,7 +29,7 @@ function getData() {
                     var row = panel.append("p");
                     row.text(finalResult[j]);                
                 
-        buildPlot(importedData);
+        buildPlot();
                 }
             }
         }   
@@ -39,9 +39,9 @@ function getData() {
 getData();
 
 // Build horizontal bar chart
-function buildPlot(data){
-    // d3.json("samples.json").then((importedData) => {
-        // var data = importedData;
+function buildPlot(){
+    d3.json("samples.json").then((importedData) => {
+        var data = importedData;
 
         var dataset = d3.select("#selDataset").node().value;
         var testCase = parseInt(dataset);
@@ -88,34 +88,34 @@ function buildPlot(data){
 
             Plotly.newPlot("bar", data, layout);    
             
-            buildBubble(data);        
-    // })
+            buildBubble();        
+    })
 }
 
 // Build bubble chart
-function buildBubble(data){
-    // d3.json("samples.json").then((importedData) => {
-    //     var data = importedData;
+function buildBubble(){
+    d3.json("samples.json").then((importedData) => {
+        var data = importedData;
 
         var dataset = d3.select("#selDataset").node().value;
         var testCase = parseInt(dataset);
-        console.log(testCase);
+        // console.log(testCase);
         var testId = data.metadata.map(row => row["id"])
         var resultindex = testId.indexOf(testCase, 0)
-        console.log("result in buildPlot",resultindex)
+        // console.log("result in buildPlot",resultindex)
 
         var results=[]
         results.push(testId[resultindex])
-        console.log("Angie",results) 
+        // console.log(results) 
 
             var dataSamples = data.samples[resultindex].sample_values;
             var dataIds = data.samples[resultindex].otu_ids;
             var dataLabels = data.samples[resultindex].otu_labels;
-            console.log("data labels", dataLabels)
+            // console.log("data labels", dataLabels)
             
             dataTop10Samples = dataSamples
             dataTop10IdValues = dataIds
-            console.log(dataTop10Samples, dataTop10IdValues)
+            // console.log(dataTop10Samples, dataTop10IdValues)
 
             var trace = {
                 x: dataIds,
@@ -138,8 +138,57 @@ function buildBubble(data){
                 width: 1000                                         
             };   
 
-            Plotly.newPlot("bubble", data, layout);               
+            Plotly.newPlot("bubble", data, layout);    
+
+            buildGauge();           
        
-    // })
+    })
 }
+
+// https://stackoverflow.com/questions/53211506/calculating-adjusting-the-needle-in-gauge-chart-plotly-js
+function buildGauge() {
+    d3.json("samples.json").then((importedData) => {
+        var data = importedData;
+
+        var dataset = d3.select("#selDataset").node().value;
+        var testCase = parseInt(dataset);
+        var testId = data.metadata.map(row => row["id"])
+        var resultindex = testId.indexOf(testCase, 0)
+
+        var results=[]
+        results.push(testId[resultindex])
+
+        var bbwfreq = data.metadata[resultindex].wfreq;
+        // console.log(hwfreq)
+
+        var data = [
+            {
+            domain: { x: [0, 1], y: [0, 1] },
+            value: bbwfreq,                                     // this moves the gauge.  This should be hwfreq
+            title: { text: `Test Subject Id #: ${testCase} Weekly Bellybutton Wash Frequency`},
+            type: "indicator",
+            mode: "gauge+number",
+            //   delta: { reference: 10 },
+            gauge: {
+                axis: { range: [null, 9] },
+                steps: [
+                { range: [0, 1], color: "#e62e00" },
+                { range: [1, 2], color: "#c83e08" },
+                { range: [2, 3], color: "#be570f" },
+                { range: [3, 4], color: "#b46b17" },
+                { range: [4, 5], color: "#a77d1f" },
+                { range: [5, 6], color: "#998c27" },
+                { range: [6, 7], color: "#889b2f" },
+                { range: [7, 8], color: "#52b640" },
+                { range: [8, 9], color: "#00cc00" },
+                ],
+                    }
+            }
+        ];
+        
+        var layout = { width: 600, height: 450, margin: { t: 0, b: 0 } };
+        Plotly.newPlot('gauge', data, layout);
+    })
+}
+
 
